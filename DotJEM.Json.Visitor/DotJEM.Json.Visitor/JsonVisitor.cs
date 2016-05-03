@@ -7,97 +7,17 @@ using Newtonsoft.Json.Linq;
 
 namespace DotJEM.Json.Visitor
 {
-    //NOTE: This is actually not a true visitor implementation.
-    //      But it's the closest descriptive name I could find for now.
-    public interface IJsonVisitor<in TContext> where TContext: IJsonVisitorContext<TContext>
-    {
-        void Accept(JToken json, TContext context);
-    }
-
-    public interface IJsonVisitorContext<out TContext>
-    {
-        TContext Index(int index);
-        TContext Property(string name);
-    }
-
-    public class NullJsonVisitorContext : IJsonVisitorContext<NullJsonVisitorContext>
-    {
-        public NullJsonVisitorContext Index(int index)
-        {
-            return this;
-        }
-
-        public NullJsonVisitorContext Property(string name)
-        {
-            return this;
-        }
-    }
-
-    public abstract class JValueVisitor<TContext> : JsonVisitor<TContext> where TContext : IJsonVisitorContext<TContext>
-    {
-        protected virtual void VisitComment(JToken json, TContext context) { }
-        protected virtual void VisitInteger(JValue json, TContext context) { }
-        protected virtual void VisitFloat(JValue json, TContext context) { }
-        protected virtual void VisitString(JValue json, TContext context) { }
-        protected virtual void VisitBoolean(JValue json, TContext context) { }
-        protected virtual void VisitNull(JValue json, TContext context) { }
-        protected virtual void VisitUndefined(JValue json, TContext context) { }
-        protected virtual void VisitDate(JValue json, TContext context) { }
-        protected virtual void VisitRaw(JRaw json, TContext context) { }
-        protected virtual void VisitBytes(JValue json, TContext context) { }
-        protected virtual void VisitGuid(JValue json, TContext context) { }
-        protected virtual void VisitUri(JValue json, TContext context) { }
-        protected virtual void VisitTimeSpan(JValue json, TContext context) { }
-
-        protected override void Visit(JRaw json, TContext context)
-        {
-            VisitRaw(json, context);
-        }
-
-        protected override void Visit(JValue json, TContext context)
-        {
-            switch (json.Type)
-            {
-                case JTokenType.Comment:
-                    VisitComment(json, context);
-                    break;
-                case JTokenType.Integer:
-                    VisitInteger(json, context);
-                    break;
-                case JTokenType.Float:
-                    VisitFloat(json, context);
-                    break;
-                case JTokenType.String:
-                    VisitString(json, context);
-                    break;
-                case JTokenType.Boolean:
-                    VisitBoolean(json, context);
-                    break;
-                case JTokenType.Null:
-                    VisitNull(json, context);
-                    break;
-                case JTokenType.Undefined:
-                    VisitUndefined(json, context);
-                    break;
-                case JTokenType.Date:
-                    VisitDate(json, context);
-                    break;
-                case JTokenType.Bytes:
-                    VisitBytes(json, context);
-                    break;
-                case JTokenType.Guid:
-                    VisitGuid(json, context);
-                    break;
-                case JTokenType.Uri:
-                    VisitUri(json, context);
-                    break;
-                case JTokenType.TimeSpan:
-                    VisitTimeSpan(json, context);
-                    break;
-            }
-        }
-    }
-
+    /// <summary>
+    /// A Json.NET JToken Visitor class that traverses a JSON object and calls the apropriate visit methods for all nodes in
+    /// the object.
+    /// 
+    /// This is not a true visitor aproach since that would require changes in JSON.NET, instead it bases it's dispatch
+    /// of the <see cref="JToken.Type"/>.
+    /// 
+    /// DoAccept performs the dispatch and any type of dispatch can be implemented by overwriting this method.
+    /// 
+    /// The visitor accepts a Context object which can be used as an alternative to tracking during the visiting process.
+    /// </summary>
     public abstract class JsonVisitor<TContext> : IJsonVisitor<TContext> where TContext : IJsonVisitorContext<TContext>
     {
         // JToken
@@ -117,7 +37,7 @@ namespace DotJEM.Json.Visitor
         {
             int i = 0;
             foreach (JToken token in json)
-                Accept(token, context.Index(i++));
+                token.Accept(this, context.Next(i++));
         }
 
         protected virtual void Visit(JConstructor json, TContext context) => Visit((JContainer) json, context);
@@ -130,14 +50,14 @@ namespace DotJEM.Json.Visitor
 
         protected virtual void Visit(JProperty json, TContext context)
         {
-            Accept(json.Value, context.Property(json.Name));   
+            json.Value.Accept(this, context.Next(json.Name));
         }
 
         protected virtual void Visit(JValue json, TContext context) => Visit((JToken) json, context);
 
         protected virtual void Visit(JRaw json, TContext context) => Visit((JValue) json, context);
 
-        public virtual void Accept(JToken json, TContext context)
+        public virtual void DoAccept(JToken json, TContext context)
         {
             switch (json.Type)
             {
@@ -180,6 +100,5 @@ namespace DotJEM.Json.Visitor
                     throw new InvalidOperationException($"Invalid jtoken type '{json.Type}'.");
             }
         }
-
     }
 }

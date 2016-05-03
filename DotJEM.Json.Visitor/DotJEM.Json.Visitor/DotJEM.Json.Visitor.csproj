@@ -44,7 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IJsonVisitor.cs" />
+    <Compile Include="IJsonVisitorContext.cs" />
     <Compile Include="JsonVisitor.cs" />
+    <Compile Include="JTokenAcceptExtension.cs" />
+    <Compile Include="JValueVisitor.cs" />
+    <Compile Include="NullJsonVisitorContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
