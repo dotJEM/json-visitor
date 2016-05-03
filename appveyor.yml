@@ -24,7 +24,7 @@ pull_requests:
   do_not_increment_build_number: true
 
 before_build:
-  nuget restore
+  nuget restore DotJEM.Json.Visitor\DotJEM.Json.Visitor.sln
 
 build:
   project: DotJEM.Json.Visitor\DotJEM.Json.Visitor.sln
