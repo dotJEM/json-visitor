@@ -27,6 +27,7 @@ before_build:
   nuget restore
 
 build:
+  project: DotJEM.Json.Visitor\DotJEM.Json.Visitor.sln
   publish_nuget: true
   publish_nuget_symbols: true
 
