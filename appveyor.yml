@@ -1,4 +1,5 @@
-version: 0.0.{build}
+version: 0.1.{build}
+simplever: 0.1.{build};
 
 configuration: Release
 
@@ -14,9 +15,9 @@ nuget:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  package_version: '0.0.{build}'
-  assembly_version: '0.0.{build}'
-  file_version: '0.0.{build}'
+  package_version: '{simplever}'
+  assembly_version: '{simplever}'
+  file_version: '{simplever}'
   informational_version: '{version}'
 
 matrix:
