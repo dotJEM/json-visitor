@@ -1,5 +1,4 @@
 version: 0.1.{build}
-simplever: 0.1.{build}
 
 configuration: Release
 
@@ -9,15 +8,18 @@ install:
 init:
 - ps: Update-AppveyorBuild -Version "0.0.$env:appveyor_build_number+sha.$($env:appveyor_repo_commit.substring(0,7))"
 
+environment:
+  simver: 0.1.{build}
+
 nuget:
   disable_publish_on_pr: true
 
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  package_version: '{simplever}'
-  assembly_version: '{simplever}'
-  file_version: '{simplever}'
+  package_version: '{simver}'
+  assembly_version: '{simver}'
+  file_version: '{simver}'
   informational_version: '{version}'
 
 matrix:
