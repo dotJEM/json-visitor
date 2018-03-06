@@ -1,5 +1,5 @@
 version: 0.1.{build}
-simplever: 0.1.{build};
+simplever: 0.1.{build}
 
 configuration: Release
 
