@@ -3,9 +3,6 @@ image: Visual Studio 2017
 
 configuration: Release
 
-install:
-- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/install-nuget-3-3-0.ps1'))
-
 init:
 - ps: Update-AppveyorBuild -Version "0.1.$env:appveyor_build_number+sha.$($env:appveyor_repo_commit.substring(0,7))"
 
@@ -18,6 +15,7 @@ nuget:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
+  version: '{version}'
   package_version: '{simver}'
   assembly_version: '{simver}'
   file_version: '{simver}'
